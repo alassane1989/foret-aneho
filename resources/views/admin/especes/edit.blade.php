@@ -1,0 +1,584 @@
+@extends('admin.layouts.admin')
+
+@section('title', 'Modifier une espèce - Administration')
+@section('page-title', 'Modifier : ' . $espece->nom_local)
+
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    :root {
+        --primary: #2E7D32;      /* Vert principal */
+        --secondary: #1976D2;     /* Bleu secondaire */
+        --danger: #C62828;        /* Rouge pour suppression */
+        --warning: #F57C00;       /* Orange pour avertissement */
+    }
+    
+    .form-section {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border: 1px solid rgba(46, 125, 50, 0.1);
+    }
+    
+    .section-title {
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e8f5e9;
+    }
+    
+    .section-title i {
+        color: var(--secondary);
+    }
+    
+    .preview-image {
+        max-width: 200px;
+        max-height: 200px;
+        margin-top: 10px;
+        border-radius: 10px;
+        border: 2px solid var(--primary);
+        display: none;
+    }
+    
+    .current-image {
+        max-width: 200px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        border: 2px solid var(--primary);
+        padding: 5px;
+    }
+    
+    .current-image img {
+        width: 100%;
+        border-radius: 8px;
+    }
+    
+    .current-image p {
+        color: var(--secondary);
+        font-size: 0.8rem;
+        margin-top: 5px;
+        text-align: center;
+    }
+    
+    .galerie-item {
+        position: relative;
+        display: inline-block;
+        margin: 5px;
+    }
+    
+    .galerie-item img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 2px solid var(--primary);
+    }
+    
+    .remove-galerie {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: var(--danger);
+        color: white;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+    
+    .remove-galerie:hover {
+        transform: scale(1.1);
+        background: #B71C1C;
+    }
+    
+    /* Boutons */
+    .btn-success {
+        background: var(--primary);
+        border-color: var(--primary);
+    }
+    .btn-success:hover {
+        background: #1B5E20;
+        border-color: #1B5E20;
+    }
+    
+    .btn-outline-secondary {
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+    .btn-outline-secondary:hover {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-outline-primary {
+        color: var(--secondary);
+        border-color: var(--secondary);
+    }
+    .btn-outline-primary:hover {
+        background: var(--secondary);
+        color: white;
+    }
+    
+    /* Formulaires */
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+    }
+    
+    .text-danger {
+        color: var(--danger) !important;
+    }
+    
+    .text-success {
+        color: var(--primary) !important;
+    }
+    
+    .text-primary {
+        color: var(--secondary) !important;
+    }
+    
+    .text-warning {
+        color: var(--warning) !important;
+    }
+    
+    /* Select2 personnalisation */
+    .select2-container--bootstrap-5 .select2-selection {
+        border-color: #dee2e6;
+    }
+    .select2-container--bootstrap-5 .select2-selection:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+    }
+    
+    /* Badge d'information */
+    .badge-id {
+        background: var(--secondary);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+    }
+    
+    /* Message d'aide */
+    .form-text {
+        color: var(--secondary);
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+    
+    /* Responsivité */
+    @media (max-width: 768px) {
+        .form-section {
+            padding: 15px;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+        }
+        
+        .current-image {
+            max-width: 100%;
+        }
+        
+        .galerie-item img {
+            width: 70px;
+            height: 70px;
+        }
+        
+        .btn-lg {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+    }
+</style>
+@endpush
+
+@section('content')
+@php
+    $user = auth()->user();
+    $hasModifierPermission = $user->aPermission('especes.modifier');
+@endphp
+
+<!-- Vérification de permission -->
+@if(!$hasModifierPermission)
+    <div class="alert alert-danger">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        Vous n'avez pas la permission de modifier les espèces.
+    </div>
+    <div class="text-center">
+        <a href="{{ route('admin.especes.index') }}" class="btn btn-primary">
+            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+        </a>
+    </div>
+@else
+
+<div class="row mb-4">
+    <div class="col-12">
+        <a href="{{ route('admin.especes.index') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+        </a>
+    </div>
+</div>
+
+<!-- En-tête avec ID -->
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <span class="badge-id me-2">#{{ $espece->id }}</span>
+                <h4 class="d-inline-block mb-0">{{ $espece->nom_local }}</h4>
+            </div>
+            <div class="text-muted small mt-2 mt-md-0">
+                <i class="fas fa-calendar-alt text-primary me-1"></i>
+                Créé le {{ $espece->created_at->format('d/m/Y à H:i') }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<form action="{{ route('admin.especes.update', $espece->id) }}" method="POST" enctype="multipart/form-data">
+    @csrf
+    @method('PUT')
+
+    <!-- Informations générales -->
+    <div class="form-section">
+        <h5 class="section-title">
+            <i class="fas fa-info-circle me-2"></i>Informations générales
+        </h5>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Nom scientifique <span class="text-danger">*</span></label>
+                <input type="text" name="nom_scientifique" class="form-control @error('nom_scientifique') is-invalid @enderror" value="{{ old('nom_scientifique', $espece->nom_scientifique) }}" required>
+                @error('nom_scientifique')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Nom local <span class="text-danger">*</span></label>
+                <input type="text" name="nom_local" class="form-control @error('nom_local') is-invalid @enderror" value="{{ old('nom_local', $espece->nom_local) }}" required>
+                @error('nom_local')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Famille</label>
+                <input type="text" name="famille" class="form-control @error('famille') is-invalid @enderror" value="{{ old('famille', $espece->famille) }}" placeholder="Ex: Fabaceae">
+                @error('famille')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Genre</label>
+                <input type="text" name="genre" class="form-control @error('genre') is-invalid @enderror" value="{{ old('genre', $espece->genre) }}" placeholder="Ex: Adansonia">
+                @error('genre')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Origine géographique</label>
+                <input type="text" name="origine" class="form-control @error('origine') is-invalid @enderror" value="{{ old('origine', $espece->origine) }}" placeholder="Ex: Afrique de l'Ouest">
+                @error('origine')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Type de feuillage</label>
+                <select name="type" class="form-control @error('type') is-invalid @enderror">
+                    <option value="">Sélectionner</option>
+                    <option value="caduques" {{ old('type', $espece->type) == 'caduques' ? 'selected' : '' }}>Caduques</option>
+                    <option value="persistant" {{ old('type', $espece->type) == 'persistant' ? 'selected' : '' }}>Persistant</option>
+                </select>
+                @error('type')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Hauteur maximale</label>
+                <input type="text" name="hauteur_max" class="form-control @error('hauteur_max') is-invalid @enderror" value="{{ old('hauteur_max', $espece->hauteur_max) }}" placeholder="Ex: 25 m">
+                @error('hauteur_max')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Longévité</label>
+                <input type="text" name="longevite" class="form-control @error('longevite') is-invalid @enderror" value="{{ old('longevite', $espece->longevite) }}" placeholder="Ex: 100-200 ans">
+                @error('longevite')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Catégorie <span class="text-danger">*</span></label>
+                <select name="categorie" class="form-control @error('categorie') is-invalid @enderror" required>
+                    <option value="">Sélectionner</option>
+                    <option value="fruitier" {{ old('categorie', $espece->categorie) == 'fruitier' ? 'selected' : '' }}>🌳 Fruitier</option>
+                    <option value="ornemental" {{ old('categorie', $espece->categorie) == 'ornemental' ? 'selected' : '' }}>🌸 Ornemental</option>
+                    <option value="foret" {{ old('categorie', $espece->categorie) == 'foret' ? 'selected' : '' }}>🌲 Forêt</option>
+                    <option value="sacre" {{ old('categorie', $espece->categorie) == 'sacre' ? 'selected' : '' }}>🕊️ Sacré</option>
+                    <option value="medicinal" {{ old('categorie', $espece->categorie) == 'medicinal' ? 'selected' : '' }}>🌿 Médicinal</option>
+                </select>
+                @error('categorie')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Statut de conservation</label>
+                <input type="text" name="statut_conservation" class="form-control @error('statut_conservation') is-invalid @enderror" value="{{ old('statut_conservation', $espece->statut_conservation) }}" placeholder="Ex: Vulnérable">
+                @error('statut_conservation')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="form-check mt-4">
+                    <input class="form-check-input" type="checkbox" name="est_locale" id="est_locale" value="1" {{ $espece->est_locale ? 'checked' : '' }}>
+                    <label class="form-check-label fw-semibold" for="est_locale">
+                        Espèce locale du Togo
+                    </label>
+                    <small class="d-block text-muted">Cocher si l'espèce est indigène</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Descriptions -->
+    <div class="form-section">
+        <h5 class="section-title">
+            <i class="fas fa-align-left me-2"></i>Descriptions
+        </h5>
+
+        <div class="mb-3">
+            <label class="form-label">Description générale <span class="text-danger">*</span></label>
+            <textarea name="description_generale" class="form-control @error('description_generale') is-invalid @enderror" rows="4" required>{{ old('description_generale', $espece->description_generale) }}</textarea>
+            <small class="form-text">Description générale de l'espèce, ses caractéristiques principales</small>
+            @error('description_generale')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description botanique</label>
+            <textarea name="description_botanique" class="form-control @error('description_botanique') is-invalid @enderror" rows="4" placeholder="Détails botaniques : feuilles, fleurs, fruits...">{{ old('description_botanique', $espece->description_botanique) }}</textarea>
+            @error('description_botanique')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Utilisations</label>
+                <textarea name="utilisation" class="form-control @error('utilisation') is-invalid @enderror" rows="3" placeholder="Utilisations traditionnelles, médicinales, alimentaires...">{{ old('utilisation', $espece->utilisation) }}</textarea>
+                @error('utilisation')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Importance culturelle</label>
+                <textarea name="importance_culturelle" class="form-control @error('importance_culturelle') is-invalid @enderror" rows="3" placeholder="Signification dans les traditions, croyances...">{{ old('importance_culturelle', $espece->importance_culturelle) }}</textarea>
+                @error('importance_culturelle')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+    </div>
+
+    <!-- Conseils de plantation -->
+    <div class="form-section">
+        <h5 class="section-title">
+            <i class="fas fa-seedling me-2"></i>Conseils de plantation
+        </h5>
+
+        @php
+            $conseils = is_array($espece->conseils_plantation) ? $espece->conseils_plantation : [];
+        @endphp
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Ensoleillement</label>
+                <input type="text" name="conseils_plantation[soleil]" class="form-control" value="{{ old('conseils_plantation.soleil', $conseils['soleil'] ?? '') }}" placeholder="Ex: Plein soleil, mi-ombre">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Arrosage</label>
+                <input type="text" name="conseils_plantation[eau]" class="form-control" value="{{ old('conseils_plantation.eau', $conseils['eau'] ?? '') }}" placeholder="Ex: Arrosage régulier, modéré">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Type de sol</label>
+                <input type="text" name="conseils_plantation[sol]" class="form-control" value="{{ old('conseils_plantation.sol', $conseils['sol'] ?? '') }}" placeholder="Ex: Bien drainé, sableux, argileux">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Température</label>
+                <input type="text" name="conseils_plantation[temperature]" class="form-control" value="{{ old('conseils_plantation.temperature', $conseils['temperature'] ?? '') }}" placeholder="Ex: Minimum 15°C, tropical">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Espacement</label>
+                <input type="text" name="conseils_plantation[espace]" class="form-control" value="{{ old('conseils_plantation.espace', $conseils['espace'] ?? '') }}" placeholder="Ex: 8-10m entre les arbres">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Entretien</label>
+                <input type="text" name="conseils_plantation[entretien]" class="form-control" value="{{ old('conseils_plantation.entretien', $conseils['entretien'] ?? '') }}" placeholder="Ex: Taille annuelle, paillage">
+            </div>
+        </div>
+    </div>
+
+    <!-- Périodes -->
+    <div class="form-section">
+        <h5 class="section-title">
+            <i class="fas fa-calendar-alt me-2"></i>Cycles et périodes
+        </h5>
+
+        @php
+            $periodes = is_array($espece->periodes) ? $espece->periodes : [];
+        @endphp
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Période de floraison</label>
+                <input type="text" name="periodes[floraison]" class="form-control" value="{{ old('periodes.floraison', $periodes['floraison'] ?? '') }}" placeholder="Ex: Octobre à décembre">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Période de fructification</label>
+                <input type="text" name="periodes[fructification]" class="form-control" value="{{ old('periodes.fructification', $periodes['fructification'] ?? '') }}" placeholder="Ex: Janvier à mars">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Chute des feuilles</label>
+                <input type="text" name="periodes[chute_feuilles]" class="form-control" value="{{ old('periodes.chute_feuilles', $periodes['chute_feuilles'] ?? '') }}" placeholder="Ex: Saison sèche">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Période de repousse</label>
+                <input type="text" name="periodes[repousse]" class="form-control" value="{{ old('periodes.repousse', $periodes['repousse'] ?? '') }}" placeholder="Ex: Début saison des pluies">
+            </div>
+        </div>
+    </div>
+
+    <!-- Images -->
+    <div class="form-section">
+        <h5 class="section-title">
+            <i class="fas fa-camera me-2"></i>Images
+        </h5>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Image principale</label>
+                
+                @if($espece->image_principale)
+                <div class="current-image">
+                    <img src="{{ Storage::url($espece->image_principale) }}" alt="{{ $espece->nom_local }}" class="img-fluid rounded">
+                    <p><i class="fas fa-image text-primary me-1"></i>Image actuelle</p>
+                </div>
+                @endif
+                
+                <input type="file" name="image_principale" class="form-control @error('image_principale') is-invalid @enderror" accept="image/*" onchange="previewImage(this, 'preview-principale')">
+                <div class="mt-2">
+                    <img id="preview-principale" class="preview-image" src="#" alt="Aperçu">
+                </div>
+                <small class="form-text">Laissez vide pour conserver l'image actuelle</small>
+                @error('image_principale')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Galerie d'images</label>
+                
+                @if($espece->galerie && is_array($espece->galerie))
+                <div class="mb-2">
+                    @foreach($espece->galerie as $image)
+                    <div class="galerie-item">
+                        <img src="{{ Storage::url($image) }}" alt="Galerie">
+                        <div class="remove-galerie" onclick="removeExistingGalerie(this, '{{ $image }}')">×</div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+                
+                <input type="file" name="galerie[]" class="form-control" accept="image/*" multiple onchange="previewGalerie(this)">
+                <div id="galerie-preview" class="mt-2 d-flex flex-wrap"></div>
+                <input type="hidden" name="remove_galerie" id="remove_galerie" value="">
+                <small class="form-text">Vous pouvez sélectionner plusieurs images</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Boutons -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <button type="submit" class="btn btn-success btn-lg px-5">
+                <i class="fas fa-save me-2"></i>Mettre à jour
+            </button>
+            <a href="{{ route('admin.especes.index') }}" class="btn btn-outline-secondary btn-lg px-5 ms-2">
+                <i class="fas fa-times me-2"></i>Annuler
+            </a>
+        </div>
+    </div>
+</form>
+@endif
+@endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            width: '100%',
+            theme: 'bootstrap-5'
+        });
+    });
+
+    let imagesToRemove = [];
+
+    function previewImage(input, previewId) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#' + previewId).attr('src', e.target.result).show();
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function previewGalerie(input) {
+        $('#galerie-preview').empty();
+        if (input.files) {
+            for (var i = 0; i < input.files.length; i++) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#galerie-preview').append(`
+                        <div class="galerie-item">
+                            <img src="${e.target.result}">
+                            <div class="remove-galerie" onclick="this.parentElement.remove()">×</div>
+                        </div>
+                    `);
+                }
+                reader.readAsDataURL(input.files[i]);
+            }
+        }
+    }
+
+    function removeExistingGalerie(element, imagePath) {
+        if (confirm('Supprimer cette image de la galerie ?')) {
+            $(element).parent().remove();
+            imagesToRemove.push(imagePath);
+            $('#remove_galerie').val(JSON.stringify(imagesToRemove));
+        }
+    }
+</script>
+@endpush
