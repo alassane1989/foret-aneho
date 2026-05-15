@@ -606,7 +606,7 @@
 </div>
 
 <!-- Filtres -->
-<section id="filtres" style="padding-top: 3rem; padding-bottom: 0 !important; margin-bottom: 0 !important;">
+{{--<section id="filtres" style="padding-top: 3rem; padding-bottom: 0 !important; margin-bottom: 0 !important;">
     <div class="container">
         <div class="filter-box">
             <form method="GET" action="{{ route('actualites.index') }}" id="filter-form">
@@ -637,7 +637,7 @@
             </form>
         </div>
     </div>
-</section>
+</section> --}}
 
 <!-- Liste des actualités -->
 <section class="bg-light" style="padding-top: 3rem; padding-bottom: 0 !important; margin-bottom: 0 !important;">
@@ -709,9 +709,32 @@
             </div>
             
             <!-- Pagination -->
-            <div style="margin-top: 2rem; margin-bottom: 0 !important;">
-                {{ $actualites->appends(request()->query())->links() }}
-            </div>
+            <div class="d-flex justify-content-center align-items-center gap-3 mt-4">
+
+    {{-- Bouton précédent --}}
+    @if ($actualites->onFirstPage())
+        <span class="btn-outline-premium disabled">← Précédent</span>
+    @else
+        <a href="{{ $actualites->previousPageUrl() }}" class="btn-outline-premium">
+            ← Précédent
+        </a>
+    @endif
+
+    {{-- Numéro de page --}}
+    <span>
+        Page {{ $actualites->currentPage() }} / {{ $actualites->lastPage() }}
+    </span>
+
+    {{-- Bouton suivant --}}
+    @if ($actualites->hasMorePages())
+        <a href="{{ $actualites->nextPageUrl() }}" class="btn-outline-premium">
+            Suivant →
+        </a>
+    @else
+        <span class="btn-outline-premium disabled">Suivant →</span>
+    @endif
+
+</div>
         @else
             <div class="text-center py-5" style="background: white; border: 1px solid #eee;">
                 <i class="fas fa-newspaper fa-4x" style="color: #ddd; margin-bottom: 1rem;"></i>

@@ -217,6 +217,32 @@
     .note-btn:hover {
         background: rgba(46, 125, 50, 0.1);
     }
+    
+    /* Style pour la checkbox newsletter */
+    .newsletter-checkbox {
+        background: linear-gradient(135deg, rgba(46, 125, 50, 0.05) 0%, rgba(25, 118, 210, 0.05) 100%);
+        border-radius: 12px;
+        padding: 15px;
+        margin-top: 15px;
+        border-left: 4px solid var(--primary);
+    }
+    
+    .newsletter-checkbox .form-check-input {
+        width: 1.2rem;
+        height: 1.2rem;
+        cursor: pointer;
+    }
+    
+    .newsletter-checkbox .form-check-label {
+        font-weight: 600;
+        color: var(--primary);
+        cursor: pointer;
+    }
+    
+    .newsletter-checkbox .form-text {
+        margin-left: 2rem;
+        color: #666;
+    }
 </style>
 @endpush
 
@@ -375,6 +401,24 @@
             <label class="form-check-label fw-semibold" for="est_publie">Publier immédiatement</label>
         </div>
         <small class="form-text">Si décoché, l'article sera enregistré comme brouillon.</small>
+        
+        <!-- AJOUT : Section Newsletter -->
+        <div class="newsletter-checkbox mt-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="send_newsletter" id="send_newsletter" value="1" checked>
+                <label class="form-check-label fw-semibold" for="send_newsletter">
+                    <i class="fas fa-envelope text-success me-2"></i>
+                    Envoyer par email aux abonnés de la newsletter
+                </label>
+            </div>
+            <small class="form-text d-block mt-1">
+                <i class="fas fa-info-circle me-1"></i>
+                Envoyez cette actualité à tous les abonnés actifs de la newsletter. 
+                Les abonnés recevront un email avec le résumé et un lien vers l'article complet.
+            </small>
+        </div>
+        <!-- FIN AJOUT Newsletter -->
+        
         @else
         <div class="alert alert-info">
             <i class="fas fa-info-circle me-2"></i>

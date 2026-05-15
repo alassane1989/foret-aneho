@@ -188,7 +188,7 @@
         text-decoration: none;
         transition: all 0.4s;
         display: inline-block;
-        width: 100%;
+        width: 25%;
     }
     
     .btn-outline-premium:hover {
@@ -389,6 +389,56 @@
         pointer-events: none;
     }
     
+    /* Styles pour les boutons de navigation personnalisés (Précédent/Suivant) - RÉDUITS */
+    .btn-outline-premium{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .custom-pagination .nav-btn {
+        background: transparent;
+        border: 1px solid var(--premium-gold);
+        padding: 0.4rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: inline-block;
+        color: var(--premium-dark);
+        border-radius: 3px;
+    }
+    
+    .custom-pagination .nav-btn:hover {
+        background: var(--premium-gold);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .custom-pagination .nav-btn.disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+    
+    .custom-pagination .page-badge {
+        background: var(--premium-gold);
+        color: white;
+        padding: 0.3rem 1rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        font-size: 0.75rem;
+        border-radius: 3px;
+    }
+
+
+    /*pagination nouveeau pour les boutons précédent et suivant*/
+
+    
     /* Espacements réduits */
     .mt-5 {
         margin-top: 2rem !important;
@@ -460,6 +510,20 @@
             padding: 0.2rem 0.4rem !important;
             font-size: 0.7rem !important;
         }
+        
+        .custom-pagination {
+            gap: 0.75rem;
+        }
+        
+        .custom-pagination .nav-btn {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.7rem;
+        }
+        
+        .custom-pagination .page-badge {
+            padding: 0.25rem 0.8rem;
+            font-size: 0.7rem;
+        }
     }
 </style>
 @endpush
@@ -489,7 +553,7 @@
 </div>
 
 <!-- Filtres Premium -->
-<section id="filtres" class="py-5">
+{{--<section id="filtres" class="py-5">
     <div class="container">
         <div class="filter-box">
             <form method="GET" action="{{ route('arbres.index') }}" id="search-form">
@@ -532,9 +596,7 @@
             </form>
         </div>
     </div>
-</section>
-
-
+</section>--}}
 
 <!-- Liste des arbres Premium -->
 <section class="pb-5">
@@ -582,13 +644,34 @@
             </div>
         </div>
         
-        <!-- Pagination ultra réduite -->
-        <div class="mt-3 text-center">
-           {{ $arbres->appends(request()->query())->links('pagination::custom') }}
-        </div>
-    </div>
-</section>
+        <!-- Pagination -->
+<div class="d-flex justify-content-center align-items-center gap-3 mt-4">
 
+    {{-- Bouton précédent --}}
+    @if ($arbres->onFirstPage())
+        <span class="btn-outline-premium disabled">← Précédent</span>
+    @else
+        <a href="{{ $arbres->previousPageUrl() }}" class="btn-outline-premium">
+            ← Précédent
+        </a>
+    @endif
+
+    {{-- Numéro de page --}}
+    <span>
+        Page {{ $arbres->currentPage() }} / {{ $arbres->lastPage() }}
+    </span>
+
+    {{-- Bouton suivant --}}
+    @if ($arbres->hasMorePages())
+        <a href="{{ $arbres->nextPageUrl() }}" class="btn-outline-premium">
+            Suivant →
+        </a>
+    @else
+        <span class="btn-outline-premium disabled">Suivant →</span>
+    @endif
+
+</div>
+</section>
 
 <section class="py-5">
     <div class="container">

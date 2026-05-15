@@ -329,10 +329,10 @@
             </a>
             @endif
             
-            <!-- Bouton actions groupées -->
+            <!-- Bouton actions groupées 
             <button class="btn btn-secondary" id="massActionsBtn" disabled onclick="showMassActions()">
                 <i class="fas fa-tasks me-2"></i>Actions groupées
-            </button>
+            </button>-->
         </div>
     </div>
 </div>

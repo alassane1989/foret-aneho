@@ -196,6 +196,41 @@
         color: #6c757d !important;
     }
     
+    /* Style pour la checkbox newsletter */
+    .newsletter-checkbox {
+        background: linear-gradient(135deg, rgba(46, 125, 50, 0.05) 0%, rgba(25, 118, 210, 0.05) 100%);
+        border-radius: 12px;
+        padding: 15px;
+        margin-top: 15px;
+        border-left: 4px solid var(--primary);
+    }
+    
+    .newsletter-checkbox .form-check-input {
+        width: 1.2rem;
+        height: 1.2rem;
+        cursor: pointer;
+    }
+    
+    .newsletter-checkbox .form-check-label {
+        font-weight: 600;
+        color: var(--primary);
+        cursor: pointer;
+    }
+    
+    .newsletter-checkbox .form-text {
+        margin-left: 2rem;
+        color: #666;
+    }
+    
+    .info-badge {
+        background: var(--secondary);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        margin-left: 8px;
+    }
+    
     /* Responsivité */
     @media (max-width: 768px) {
         .form-section {
@@ -277,6 +312,11 @@
         <div>
             <span class="badge-id me-2">ID: #{{ $actualite->id }}</span>
             <span class="badge bg-success">Vues: {{ $actualite->vues }}</span>
+            @if($actualite->est_publie)
+            <span class="badge bg-success ms-2">Publié</span>
+            @else
+            <span class="badge bg-warning ms-2">Brouillon</span>
+            @endif
         </div>
     </div>
 </div>
@@ -432,6 +472,31 @@
             <label class="form-check-label fw-semibold" for="est_publie">Article publié</label>
         </div>
         <small class="form-text">Si décoché, l'article sera enregistré comme brouillon.</small>
+        
+        <!-- AJOUT : Section Newsletter -->
+        <div class="newsletter-checkbox mt-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="send_newsletter" id="send_newsletter" value="1" 
+                       {{ $actualite->est_publie ? '' : 'disabled' }}>
+                <label class="form-check-label fw-semibold" for="send_newsletter">
+                    <i class="fas fa-envelope text-success me-2"></i>
+                    Envoyer par email aux abonnés de la newsletter
+                    @if(!$actualite->est_publie)
+                    <span class="info-badge">(Activez la publication pour envoyer)</span>
+                    @endif
+                </label>
+            </div>
+            <small class="form-text d-block mt-1">
+                <i class="fas fa-info-circle me-1"></i>
+                Envoyez cette actualité à tous les abonnés actifs de la newsletter. 
+                Les abonnés recevront un email avec le résumé et un lien vers l'article complet.
+                @if($actualite->est_publie)
+                <br><strong class="text-warning">⚠️ Note :</strong> L'envoi sera effectué uniquement si l'article n'était pas déjà publié.
+                @endif
+            </small>
+        </div>
+        <!-- FIN AJOUT Newsletter -->
+        
         @else
         <div class="alert alert-info">
             <i class="fas fa-info-circle me-2"></i>
@@ -441,6 +506,25 @@
             </span>
             <input type="hidden" name="est_publie" value="{{ $actualite->est_publie ? '1' : '0' }}">
         </div>
+        
+        <!-- AJOUT : Section Newsletter (même si pas de permission publication) -->
+        @if($actualite->est_publie)
+        <div class="newsletter-checkbox mt-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="send_newsletter" id="send_newsletter" value="1">
+                <label class="form-check-label fw-semibold" for="send_newsletter">
+                    <i class="fas fa-envelope text-success me-2"></i>
+                    Envoyer par email aux abonnés de la newsletter
+                </label>
+            </div>
+            <small class="form-text d-block mt-1">
+                <i class="fas fa-info-circle me-1"></i>
+                Envoyez cette actualité déjà publiée à tous les abonnés actifs de la newsletter.
+            </small>
+        </div>
+        @endif
+        <!-- FIN AJOUT Newsletter -->
+        
         @endif
     </div>
 
@@ -481,8 +565,21 @@
             lang: 'fr-FR',
             callbacks: {
                 onImageUpload: function(files) {
-                    // Ici vous pourriez implémenter l'upload d'images via AJAX
                     alert('Pour insérer une image, utilisez l\'URL de l\'image ou uploader via le gestionnaire de fichiers');
+                }
+            }
+        });
+        
+        // Gestion de l'activation/désactivation de la checkbox newsletter selon le statut de publication
+        $('#est_publie').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('#send_newsletter').prop('disabled', false);
+                $('#send_newsletter').closest('.newsletter-checkbox').find('.info-badge').remove();
+            } else {
+                $('#send_newsletter').prop('disabled', true);
+                $('#send_newsletter').prop('checked', false);
+                if (!$('#send_newsletter').closest('.newsletter-checkbox').find('.info-badge').length) {
+                    $('#send_newsletter').closest('.form-check').append('<span class="info-badge">(Activez la publication pour envoyer)</span>');
                 }
             }
         });

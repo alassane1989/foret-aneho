@@ -187,7 +187,7 @@
         text-decoration: none;
         transition: all 0.4s;
         display: inline-block;
-        width: 100%;
+        width: 25%;
     }
     
     .btn-outline-premium:hover {
@@ -449,6 +449,22 @@
             padding-bottom: 0 !important;
         }
     }
+
+    /* Empêcher la pagination d'être cachée par le footer */
+.bg-light {
+    padding-bottom: 3rem !important;
+}
+
+.d-flex.justify-content-center.mt-4 {
+    margin-bottom: 2rem !important;
+    position: relative;
+    z-index: 1;
+}
+
+footer.footer-custom {
+    position: relative;
+    z-index: 0;
+}
 </style>
 @endpush
 
@@ -480,7 +496,7 @@
 </div>
 
 <!-- Filtres et recherche -->
-<section id="filtres" class="py-5" style="padding-bottom: 0 !important; margin-bottom: 0 !important;">
+{{--<section id="filtres" class="py-5" style="padding-bottom: 0 !important; margin-bottom: 0 !important;">
     <div class="container">
         <div class="filter-box">
             <form method="GET" action="{{ route('especes.index') }}" id="filter-form">
@@ -520,7 +536,7 @@
             </form>
         </div>
     </div>
-</section>
+</section>--}}
 
 <!-- Liste des espèces - 2 par ligne avec image de fond -->
 <section class="bg-light" style="padding-top: 3rem; padding-bottom: 0 !important; margin-bottom: 0 !important;">
@@ -568,9 +584,35 @@
             </div>
         </div>
         
-        <!-- Pagination -->
-        <div class="mt-4" style="margin-bottom: 0 !important; padding-bottom: 0 !important;">
-            {{ $especes->appends(request()->query())->links() }}
+        <!-- Pagination 
+        <div class="mt-4" style="margin-bottom: 0 !important; padding-bottom: 0 !important;">-->
+                <!-- Pagination -->
+<div class="d-flex justify-content-center align-items-center gap-3 mt-4">
+
+    {{-- Bouton précédent --}}
+    @if ($especes->onFirstPage())
+        <span class="btn-outline-premium disabled">← Précédent</span>
+    @else
+        <a href="{{ $especes->previousPageUrl() }}" class="btn-outline-premium">
+            ← Précédent
+        </a>
+    @endif
+
+    {{-- Numéro de page --}}
+    <span>
+        Page {{ $especes->currentPage() }} / {{ $especes->lastPage() }}
+    </span>
+
+    {{-- Bouton suivant --}}
+    @if ($especes->hasMorePages())
+        <a href="{{ $especes->nextPageUrl() }}" class="btn-outline-premium">
+            Suivant →
+        </a>
+    @else
+        <span class="btn-outline-premium disabled">Suivant →</span>
+    @endif
+
+</div>
         </div>
     </div>
 </section>

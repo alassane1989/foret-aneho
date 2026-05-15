@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Actualite;
 use App\Models\User;
+use App\Traits\NewsletterTrait; // AJOUTÉ
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class ActualiteController extends Controller
 {
+    use NewsletterTrait; // AJOUTÉ
+
     /**
      * Vérification centralisée des permissions
      */
@@ -100,6 +103,7 @@ class ActualiteController extends Controller
     /**
      * Enregistrer une nouvelle actualité
      * Permission: actualites.creer
+     * MODIFIÉ - Ajout de l'envoi newsletter
      */
     public function store(Request $request)
     {
@@ -116,6 +120,7 @@ class ActualiteController extends Controller
             'date_publication' => 'required|date',
             'est_publie' => 'boolean',
             'tags' => 'nullable|string',
+            'send_newsletter' => 'nullable|boolean', // AJOUTÉ
         ]);
 
         // Gérer l'upload de l'image principale
@@ -148,7 +153,20 @@ class ActualiteController extends Controller
         // Est_publie par défaut à false si non fourni
         $validated['est_publie'] = $request->has('est_publie');
 
-        Actualite::create($validated);
+        $actualite = Actualite::create($validated);
+
+        // AJOUTÉ - Envoyer la newsletter SI l'actualité est publiée ET que l'option est cochée
+        if ($actualite->est_publie && $request->has('send_newsletter') && $request->send_newsletter == '1') {
+            $result = $this->sendActualiteToSubscribers($actualite);
+            
+            if ($result['success']) {
+                return redirect()->route('admin.actualites.index')
+                    ->with('success', 'Actualité créée et envoyée avec succès! ' . $result['message']);
+            } else {
+                return redirect()->route('admin.actualites.index')
+                    ->with('warning', 'Actualité créée mais l\'envoi a échoué: ' . $result['message']);
+            }
+        }
 
         return redirect()->route('admin.actualites.index')
             ->with('success', 'Actualité créée avec succès.');
@@ -196,6 +214,7 @@ class ActualiteController extends Controller
     /**
      * Mettre à jour une actualité
      * Permission: actualites.modifier
+     * MODIFIÉ - Ajout de l'envoi newsletter
      */
     public function update(Request $request, $id)
     {
@@ -214,7 +233,11 @@ class ActualiteController extends Controller
             'date_publication' => 'required|date',
             'est_publie' => 'boolean',
             'tags' => 'nullable|string',
+            'send_newsletter' => 'nullable|boolean', // AJOUTÉ
         ]);
+
+        $oldStatus = $actualite->est_publie; // AJOUTÉ
+        $newStatus = $request->has('est_publie'); // AJOUTÉ
 
         // Gérer l'upload de l'image principale
         if ($request->hasFile('image_principale')) {
@@ -254,9 +277,22 @@ class ActualiteController extends Controller
             $validated['tags'] = null;
         }
 
-        $validated['est_publie'] = $request->has('est_publie');
+        $validated['est_publie'] = $newStatus;
 
         $actualite->update($validated);
+
+        // AJOUTÉ - Envoyer la newsletter SI l'actualité vient d'être publiée ET que l'option est cochée
+        if ($newStatus && !$oldStatus && $request->has('send_newsletter') && $request->send_newsletter == '1') {
+            $result = $this->sendActualiteToSubscribers($actualite);
+            
+            if ($result['success']) {
+                return redirect()->route('admin.actualites.index')
+                    ->with('success', 'Actualité mise à jour et envoyée avec succès! ' . $result['message']);
+            } else {
+                return redirect()->route('admin.actualites.index')
+                    ->with('warning', 'Actualité mise à jour mais l\'envoi a échoué: ' . $result['message']);
+            }
+        }
 
         return redirect()->route('admin.actualites.index')
             ->with('success', 'Actualité mise à jour avec succès.');
@@ -298,21 +334,35 @@ class ActualiteController extends Controller
     /**
      * Changer le statut (publier/dépublier)
      * Permission: actualites.publier
+     * MODIFIÉ - Ajout de l'option d'envoi
      */
-    public function toggleStatus($id)
+    public function toggleStatus($id, Request $request)
     {
         if ($response = $this->authorizePermission('actualites.publier')) {
             return $response;
         }
 
         $actualite = Actualite::findOrFail($id);
+        $oldStatus = $actualite->est_publie;
         $actualite->est_publie = !$actualite->est_publie;
         $actualite->save();
 
         $status = $actualite->est_publie ? 'publiée' : 'dépubliée';
+        
+        $message = "Actualité {$status} avec succès.";
+        
+        // AJOUTÉ - Envoyer la newsletter si l'actualité vient d'être publiée
+        if ($actualite->est_publie && !$oldStatus && $request->has('send_newsletter') && $request->send_newsletter == '1') {
+            $result = $this->sendActualiteToSubscribers($actualite);
+            
+            if ($result['success']) {
+                $message .= ' ' . $result['message'];
+            } else {
+                $message .= ' Mais l\'envoi a échoué: ' . $result['message'];
+            }
+        }
 
-        return redirect()->back()
-            ->with('success', "Actualité {$status} avec succès.");
+        return redirect()->back()->with('success', $message);
     }
 
     /**
@@ -373,5 +423,33 @@ class ActualiteController extends Controller
         $pdf = Pdf::loadView('admin.exports.actualites-pdf', compact('actualites', 'stats'));
         
         return $pdf->download('actualites-' . date('Y-m-d') . '.pdf');
+    }
+
+    /**
+     * AJOUTÉ - Envoyer une actualité existante aux abonnés
+     * Permission: actualites.modifier
+     */
+    public function sendToNewsletter($id)
+    {
+        if ($response = $this->authorizePermission('actualites.modifier')) {
+            return $response;
+        }
+
+        $actualite = Actualite::findOrFail($id);
+        
+        if (!$actualite->est_publie) {
+            return redirect()->back()
+                ->with('error', 'Cette actualité n\'est pas encore publiée. Veuillez d\'abord la publier.');
+        }
+        
+        $result = $this->sendActualiteToSubscribers($actualite);
+        
+        if ($result['success']) {
+            return redirect()->back()
+                ->with('success', $result['message']);
+        } else {
+            return redirect()->back()
+                ->with('error', $result['message']);
+        }
     }
 }

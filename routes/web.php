@@ -54,6 +54,15 @@ Route::post('/contact', [ContactController::class, 'send'])->name('contact.send'
 
 // Newsletter
 Route::post('/newsletter', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+Route::get('/newsletter/unsubscribe/{email}', [NewsletterController::class, 'unsubscribeByEmail'])->name('newsletter.unsubscribe');
+
+// recherche
+Route::get('/recherche', [App\Http\Controllers\SearchController::class, 'search'])->name('search');
+
+// ========== DOCUMENTATION TECHNIQUE ==========
+Route::get('/documentation', function () {
+    return view('documentation');
+})->name('documentation');
 
 ///////////////////////////////////////////////////////////
 // Routes d'administration
@@ -67,41 +76,44 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 // Routes protégées par middleware admin
 Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
-    // Dashboard (corrigé : appel du contrôleur)
+    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    // Gestion des rôles (accessible seulement aux super admin et admin)
+    
+    // Gestion des rôles
     Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
 
-    // CRUD Arbres
-    Route::resource('arbres', AdminArbreController::class);
+    // CRUD Arbres avec conversion WebP
+    Route::resource('arbres', AdminArbreController::class)->middleware(['convert.webp']);
     Route::get('/arbres/export/excel', [AdminArbreController::class, 'exportExcel'])->name('arbres.export.excel');
     Route::get('/arbres/export/pdf', [AdminArbreController::class, 'exportPdf'])->name('arbres.export.pdf');
 
+    // Gestion des images des arbres avec conversion WebP
+    Route::prefix('arbres/{arbre}')->middleware(['convert.webp'])->group(function () {
+        Route::get('/images', [App\Http\Controllers\Admin\ArbreImageController::class, 'index'])->name('arbres.images.index');
+        Route::post('/images', [App\Http\Controllers\Admin\ArbreImageController::class, 'upload'])->name('arbres.images.upload');
+        Route::delete('/images/{image}', [App\Http\Controllers\Admin\ArbreImageController::class, 'destroy'])->name('arbres.images.delete');
+    });
 
-    // ⚠️ **NOUVELLES ROUTES POUR LES IMAGES DES ARBRES**
-    Route::get('/arbres/{arbre}/images', [App\Http\Controllers\Admin\ArbreImageController::class, 'index'])->name('arbres.images.index');
-    Route::post('/arbres/{arbre}/images', [App\Http\Controllers\Admin\ArbreImageController::class, 'upload'])->name('arbres.images.upload');
-    Route::delete('/arbres/images/{image}', [App\Http\Controllers\Admin\ArbreImageController::class, 'destroy'])->name('arbres.images.delete');
-
-    // CRUD Zones
-    Route::resource('zones', AdminZoneController::class);
+    // CRUD Zones avec conversion WebP
+    Route::resource('zones', AdminZoneController::class)->middleware(['convert.webp']);
     Route::post('/zones/reorder', [AdminZoneController::class, 'reorder'])->name('zones.reorder');
     Route::get('/zones/export/excel', [AdminZoneController::class, 'exportExcel'])->name('zones.export.excel');
     Route::get('/zones/export/pdf', [AdminZoneController::class, 'exportPdf'])->name('zones.export.pdf');
 
-    // CRUD Espèces
-    Route::resource('especes', AdminEspeceController::class);
+    // CRUD Espèces avec conversion WebP
+    Route::resource('especes', AdminEspeceController::class)->middleware(['convert.webp']);
     Route::get('/especes/export/excel', [AdminEspeceController::class, 'exportExcel'])->name('especes.export.excel');
     Route::get('/especes/export/pdf', [AdminEspeceController::class, 'exportPdf'])->name('especes.export.pdf');
 
-    // CRUD Actualités
-    Route::resource('actualites', AdminActualiteController::class);
+    // CRUD Actualités avec conversion WebP
+    Route::resource('actualites', AdminActualiteController::class)->middleware(['convert.webp']);
     Route::post('/actualites/{id}/toggle-status', [AdminActualiteController::class, 'toggleStatus'])->name('actualites.toggle-status');
     Route::post('/actualites/{id}/duplicate', [AdminActualiteController::class, 'duplicate'])->name('actualites.duplicate');
+    Route::post('/actualites/{id}/send-to-newsletter', [AdminActualiteController::class, 'sendToNewsletter'])->name('actualites.send-to-newsletter');
     Route::get('/actualites/export/excel', [AdminActualiteController::class, 'exportExcel'])->name('actualites.export.excel');
     Route::get('/actualites/export/pdf', [AdminActualiteController::class, 'exportPdf'])->name('actualites.export.pdf');
 
-    // Gestion des contacts
+    // Gestion des contacts (pas de conversion d'images)
     Route::resource('contacts', AdminContactController::class)->only(['index', 'show', 'destroy']);
     Route::post('/contacts/{id}/mark-as-read', [AdminContactController::class, 'markAsRead'])->name('contacts.mark-as-read');
     Route::post('/contacts/{id}/mark-as-unread', [AdminContactController::class, 'markAsUnread'])->name('contacts.mark-as-unread');
@@ -112,7 +124,7 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
     Route::get('/contacts/export/excel', [AdminContactController::class, 'exportExcel'])->name('contacts.export.excel');
     Route::get('/contacts/export/pdf', [AdminContactController::class, 'exportPdf'])->name('contacts.export.pdf');
 
-    // Gestion de la newsletter
+    // Gestion de la newsletter (pas de conversion d'images)
     Route::resource('newsletters', AdminNewsletterController::class);
     Route::post('/newsletters/{id}/unsubscribe', [AdminNewsletterController::class, 'unsubscribe'])->name('newsletters.unsubscribe');
     Route::post('/newsletters/{id}/reactivate', [AdminNewsletterController::class, 'reactivate'])->name('newsletters.reactivate');
@@ -123,14 +135,14 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
     Route::get('/newsletters/export/csv', [AdminNewsletterController::class, 'exportCsv'])->name('newsletters.export.csv');
     Route::post('/newsletters/send', [AdminNewsletterController::class, 'sendNewsletter'])->name('newsletters.send');
 
-    // Profil administrateur
+    // Profil administrateur avec conversion WebP pour l'avatar
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
-    Route::post('/profile/update-avatar', [ProfileController::class, 'updateAvatar'])->name('profile.update-avatar');
+    Route::post('/profile/update-avatar', [ProfileController::class, 'updateAvatar'])->name('profile.update-avatar')->middleware(['convert.webp']);
     Route::delete('/profile/delete-avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.delete-avatar');
 
-    // Paramètres
+    // Paramètres (pas de conversion d'images)
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     Route::post('/settings/general', [SettingsController::class, 'updateGeneral'])->name('settings.general');
     Route::post('/settings/social', [SettingsController::class, 'updateSocial'])->name('settings.social');
@@ -138,12 +150,12 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
     Route::post('/settings/optimize', [SettingsController::class, 'optimize'])->name('settings.optimize');
     Route::post('/settings/test-email', [SettingsController::class, 'testEmail'])->name('settings.test-email');
 
-
-
-    // Gestion des utilisateurs et rôles
-    Route::resource('users', App\Http\Controllers\Admin\UserRoleController::class);
+    // Gestion des utilisateurs et rôles avec conversion WebP pour les avatars
+    Route::resource('users', App\Http\Controllers\Admin\UserRoleController::class)->middleware(['convert.webp']);
     Route::post('users/{user}/toggle-status', [App\Http\Controllers\Admin\UserRoleController::class, 'toggleStatus'])
         ->name('users.toggle-status');
     Route::get('users/search/ajax', [App\Http\Controllers\Admin\UserRoleController::class, 'search'])
         ->name('users.search');
+
+      
 });

@@ -12,6 +12,7 @@
         --danger: #C62828;        /* Rouge pour suppression */
         --warning: #F57C00;       /* Orange pour avertissement */
         --purple: #9C27B0;        /* Violet pour partenariat */
+        --info: #17a2b8;          /* Bleu info pour newsletter */
     }
     
     /* ===== STYLES GÉNÉRAUX ===== */
@@ -140,6 +141,16 @@
         border-color: #545b62;
     }
     
+    /* ===== BOUTON NEWSLETTER ===== */
+    .btn-newsletter {
+        color: var(--info);
+        border-color: var(--info);
+    }
+    .btn-newsletter:hover {
+        background: var(--info);
+        color: white;
+    }
+    
     /* ===== BOUTONS D'ACTION - FORMAT 2x2 ===== */
     .actions-wrapper {
         display: flex;
@@ -154,7 +165,7 @@
         gap: 4px;
     }
     
-    .btn-action, .btn-publish {
+    .btn-action, .btn-publish, .btn-newsletter-action {
         width: 32px;
         height: 32px;
         padding: 0;
@@ -196,6 +207,16 @@
         color: white;
     }
     
+    /* Bouton Newsletter */
+    .btn-newsletter-action {
+        color: var(--info);
+        border-color: var(--info);
+    }
+    .btn-newsletter-action:hover {
+        background: var(--info);
+        color: white;
+    }
+    
     /* Bouton Publier/Dépublier */
     .btn-publish.published {
         color: var(--warning);
@@ -225,6 +246,7 @@
     .text-primary { color: var(--secondary) !important; }
     .text-danger { color: var(--danger) !important; }
     .text-warning { color: var(--warning) !important; }
+    .text-info { color: var(--info) !important; }
     
     /* ===== TABLEAU ===== */
     .table thead th {
@@ -293,14 +315,14 @@
     
     /* ===== RESPONSIVITÉ ===== */
     @media (max-width: 1200px) {
-        .btn-action, .btn-publish {
+        .btn-action, .btn-publish, .btn-newsletter-action {
             width: 30px;
             height: 30px;
         }
     }
     
     @media (max-width: 992px) {
-        .btn-action, .btn-publish {
+        .btn-action, .btn-publish, .btn-newsletter-action {
             width: 28px;
             height: 28px;
             font-size: 0.85rem;
@@ -312,7 +334,7 @@
             margin-bottom: 15px;
         }
         
-        .btn-action, .btn-publish {
+        .btn-action, .btn-publish, .btn-newsletter-action {
             width: 26px;
             height: 26px;
             font-size: 0.8rem;
@@ -486,7 +508,7 @@
 <div class="table-container">
     <table class="table table-hover" id="actualites-table">
         <thead>
-            <tr>
+            32
                 <th>Image</th>
                 <th>Titre</th>
                 <th>Catégorie</th>
@@ -558,7 +580,7 @@
                             @endif
                         </div>
                         
-                        <!-- Deuxième ligne : 2 boutons -->
+                        <!-- Deuxième ligne : 3 boutons (ajout du bouton newsletter) -->
                         <div class="actions-row">
                             @if($perms['publier'])
                             <form action="{{ route('admin.actualites.toggle-status', $actualite->id) }}" 
@@ -571,6 +593,21 @@
                                 </button>
                             </form>
                             @endif
+                            
+                            <!-- AJOUT : BOUTON ENVOI NEWSLETTER -->
+                            @if($perms['modifier'] && $actualite->est_publie)
+                            <form action="{{ route('admin.actualites.send-to-newsletter', $actualite->id) }}" 
+                                  method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" 
+                                        class="btn-newsletter-action" 
+                                        title="Envoyer aux abonnés de la newsletter"
+                                        onclick="return confirm('Envoyer cette actualité à tous les abonnés de la newsletter ?\n\n{{ $actualite->titre }}\n\nCette action enverra un email à tous les abonnés actifs.')">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </form>
+                            @endif
+                            <!-- FIN AJOUT -->
                             
                             @if($perms['supprimer'])
                             <form action="{{ route('admin.actualites.destroy', $actualite->id) }}" 

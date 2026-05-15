@@ -13,60 +13,46 @@
     <style>
         /* ========== VARIABLES DE THÈME ========== */
         :root {
-            /* Thème Blanc (par défaut) */
             --primary-color: #036f15;
             --primary-hover: #024e0f;
             --primary-light: #4caf50;
             --secondary-color: #ff9800;
-            
             --bg-primary: #ffffff;
             --bg-secondary: #f8f9fa;
             --bg-tertiary: #e9ecef;
             --bg-white: #ffffff;
             --bg-black: #000000;
-            
             --text-primary: #212529;
             --text-secondary: #495057;
             --text-muted: #6c757d;
             --text-inverse: #ffffff;
             --text-white: #ffffff;
             --text-black: #000000;
-            
             --border-color: #036f15;
             --border-light: #dee2e6;
             --border-white: #ffffff;
-            
             --card-bg: #ffffff;
             --card-border: #e9ecef;
             --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            
             --input-bg: #ffffff;
             --input-border: #ced4da;
             --input-focus: rgba(3,111,21,0.25);
-            
             --table-stripe: #f8f9fa;
             --table-border: #dee2e6;
             --table-header-bg: #f8f9fa;
-            
             --header-bg: #ffffff;
             --footer-bg: #ffffff;
             --footer-text: #495057;
-            
             --shadow-sm: 0 2px 10px rgba(0,0,0,0.05);
             --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
             --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
-            
             --transition-speed: 0.3s;
-            
-            /* Couleurs spécifiques Bootstrap */
             --bs-body-bg: #ffffff;
             --bs-body-color: #212529;
             --bs-light: #f8f9fa;
             --bs-light-rgb: 248, 249, 250;
             --bs-dark: #212529;
             --bs-dark-rgb: 33, 37, 41;
-            
-            /* Couleurs pour les sections */
             --hero-bg: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             --section-bg: #ffffff;
             --article-bg: #ffffff;
@@ -74,59 +60,46 @@
             --well-bg: #f8f9fa;
         }
 
-        /* Thème Noir */
         [data-theme="dark"] {
             --primary-color: #4caf50;
             --primary-hover: #2e7d32;
             --primary-light: #81c784;
             --secondary-color: #ffb74d;
-            
             --bg-primary: #1a1a1a;
             --bg-secondary: #2d2d2d;
             --bg-tertiary: #404040;
             --bg-white: #1a1a1a;
             --bg-black: #ffffff;
-            
             --text-primary: #f0f0f0;
             --text-secondary: #cccccc;
             --text-muted: #b0b0b0;
             --text-inverse: #1a1a1a;
             --text-white: #1a1a1a;
             --text-black: #ffffff;
-            
             --border-color: #4caf50;
             --border-light: #404040;
             --border-white: #404040;
-            
             --card-bg: #2d2d2d;
             --card-border: #404040;
             --card-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            
             --input-bg: #404040;
             --input-border: #666666;
             --input-focus: rgba(76,175,80,0.25);
-            
             --table-stripe: #333333;
             --table-border: #404040;
             --table-header-bg: #404040;
-            
             --header-bg: #2d2d2d;
             --footer-bg: #2d2d2d;
             --footer-text: #cccccc;
-            
             --shadow-sm: 0 2px 10px rgba(0,0,0,0.3);
             --shadow-md: 0 4px 20px rgba(0,0,0,0.4);
             --shadow-lg: 0 8px 30px rgba(0,0,0,0.5);
-            
-            /* Couleurs spécifiques Bootstrap pour le mode sombre */
             --bs-body-bg: #1a1a1a;
             --bs-body-color: #f0f0f0;
             --bs-light: #2d2d2d;
             --bs-light-rgb: 45, 45, 45;
             --bs-dark: #f0f0f0;
             --bs-dark-rgb: 240, 240, 240;
-            
-            /* Couleurs pour les sections */
             --hero-bg: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
             --section-bg: #1a1a1a;
             --article-bg: #2d2d2d;
@@ -134,7 +107,6 @@
             --well-bg: #404040;
         }
 
-        /* ========== STYLES GLOBAUX ========== */
         * {
             margin: 0;
             padding: 0;
@@ -155,7 +127,6 @@
             margin: 0;
         }
 
-        /* Surcharge des classes Bootstrap */
         .bg-white {
             background-color: var(--bg-white) !important;
         }
@@ -188,7 +159,6 @@
             border-color: var(--border-light) !important;
         }
 
-        /* ========== NAVBAR ========== */
         .navbar {
             padding: 2px 0;
             background: var(--header-bg) !important;
@@ -277,7 +247,80 @@
             font-weight: 700;
         }
 
-        /* ========== BOUTON DE THÈME PETIT ========== */
+        .search-wrapper {
+            display: flex;
+            align-items: center;
+            margin-left: 15px;
+        }
+        
+        .search-form {
+            display: flex;
+            align-items: center;
+            background: var(--bg-secondary);
+            border-radius: 50px;
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .search-form:focus-within {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--input-focus);
+        }
+        
+        .search-input {
+            border: none;
+            background: transparent;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            width: 200px;
+            outline: none;
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .search-btn {
+            background: transparent;
+            border: none;
+            padding: 8px 15px;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        @media (max-width: 991px) {
+            .search-wrapper {
+                margin-left: 0;
+                margin-top: 10px;
+                width: 100%;
+            }
+            .search-form {
+                width: 100%;
+            }
+            .search-input {
+                flex: 1;
+                width: auto;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .search-input {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+            .search-btn {
+                padding: 8px 12px;
+            }
+        }
+
         .theme-toggle-wrapper {
             display: flex;
             align-items: center;
@@ -325,7 +368,6 @@
             transform: rotate(180deg);
         }
 
-        /* Animation de bascule */
         @keyframes themePulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -336,8 +378,6 @@
             animation: themePulse 0.3s ease;
         }
 
-        /* ========== SECTIONS DE LA PAGE ========== */
-        /* Hero section */
         .hero-section {
             background: var(--hero-bg);
             color: var(--text-primary);
@@ -345,7 +385,6 @@
             margin-top: 0;
         }
 
-        /* Sections générales */
         .section {
             background: var(--section-bg);
             color: var(--text-primary);
@@ -356,7 +395,6 @@
             background: var(--bg-secondary);
         }
 
-        /* Articles et contenu */
         .article-card {
             background: var(--article-bg);
             border: 1px solid var(--card-border);
@@ -365,7 +403,6 @@
             box-shadow: var(--card-shadow);
         }
 
-        /* Sidebar */
         .sidebar-content {
             background: var(--sidebar-bg);
             border-radius: 10px;
@@ -373,20 +410,17 @@
             border: 1px solid var(--border-light);
         }
 
-        /* Listes */
         .list-group-item {
             background: var(--card-bg);
             color: var(--text-primary);
             border-color: var(--border-light);
         }
 
-        /* Well / Jumbotron */
         .well, .jumbotron {
             background: var(--well-bg);
             color: var(--text-primary);
         }
 
-        /* ========== FOOTER ========== */
         .footer-custom {
             background: var(--footer-bg) !important;
             color: var(--footer-text) !important;
@@ -472,8 +506,6 @@
             margin: 2rem 0;
         }
 
-        /* ========== COMPOSANTS COMMUNS ========== */
-        /* Cartes */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -502,7 +534,6 @@
             color: var(--text-primary);
         }
 
-        /* Tableaux */
         .table {
             color: var(--text-primary);
             margin-bottom: 0;
@@ -524,7 +555,6 @@
             border-bottom: 2px solid var(--border-color);
         }
 
-        /* Formulaires */
         .form-control, .form-select {
             background-color: var(--input-bg);
             border: 1px solid var(--input-border);
@@ -550,7 +580,6 @@
             color: var(--text-primary);
         }
 
-        /* Alertes */
         .alert {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -579,7 +608,6 @@
             border-color: #ffc107;
         }
 
-        /* Boutons */
         .btn {
             padding: 8px 20px;
             border-radius: 8px;
@@ -623,7 +651,6 @@
             color: var(--text-primary);
         }
 
-        /* Badges */
         .badge {
             padding: 5px 10px;
             border-radius: 20px;
@@ -644,7 +671,6 @@
             color: var(--text-white) !important;
         }
 
-        /* Progress bars */
         .progress {
             background: var(--bg-tertiary);
             border-radius: 10px;
@@ -656,7 +682,6 @@
             transition: width 0.6s ease;
         }
 
-        /* Pagination */
         .pagination .page-link {
             background: var(--card-bg);
             border-color: var(--border-light);
@@ -679,7 +704,6 @@
             color: var(--text-muted);
         }
 
-        /* Modals */
         .modal-content {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -698,7 +722,6 @@
             color: var(--text-primary);
         }
 
-        /* Dropdowns */
         .dropdown-menu {
             background: var(--card-bg);
             border: 1px solid var(--border-light);
@@ -718,7 +741,6 @@
             border-top: 1px solid var(--border-light);
         }
 
-        /* Navs et tabs */
         .nav-tabs .nav-link {
             color: var(--text-primary);
             background: var(--card-bg);
@@ -746,7 +768,6 @@
             color: white;
         }
 
-        /* Breadcrumb */
         .breadcrumb {
             background: var(--bg-secondary);
         }
@@ -759,7 +780,6 @@
             color: var(--text-primary);
         }
 
-        /* ========== RESPONSIVE ========== */
         @media (max-width: 1199px) {
             .navbar-brand img { height: 65px; }
             .navbar-nav .nav-link { padding: 8px 12px; font-size: 0.95rem; }
@@ -767,7 +787,6 @@
         
         @media (max-width: 991px) {
             .navbar-brand img { height: 60px; }
-            
             .navbar-collapse {
                 background: var(--header-bg);
                 padding: 15px;
@@ -775,17 +794,14 @@
                 margin-top: 10px;
                 box-shadow: var(--shadow-md);
             }
-            
             .navbar-nav .nav-link {
                 padding: 10px 15px;
             }
-            
             .theme-toggle-wrapper {
                 margin-left: 0;
                 margin-top: 10px;
                 width: 100%;
             }
-            
             .theme-switch-btn {
                 width: 100%;
                 justify-content: center;
@@ -801,14 +817,12 @@
             .navbar-brand img { height: 50px; }
         }
 
-        /* ========== CONTENEUR PRINCIPAL ========== */
         .main-content {
             min-height: calc(100vh - 200px);
             padding: 30px 0;
             background: var(--bg-primary);
         }
 
-        /* Animation d'entrée des éléments */
         @keyframes slideUp {
             from {
                 opacity: 0;
@@ -824,7 +838,6 @@
             animation: slideUp 0.5s ease-out forwards;
         }
 
-        /* Scrollbar personnalisée */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -842,13 +855,32 @@
             background: var(--primary-hover);
         }
 
-        /* Classes utilitaires pour le thème */
         .bg-theme-primary { background: var(--bg-primary) !important; }
         .bg-theme-secondary { background: var(--bg-secondary) !important; }
         .bg-theme-tertiary { background: var(--bg-tertiary) !important; }
         .text-theme-primary { color: var(--text-primary) !important; }
         .text-theme-secondary { color: var(--text-secondary) !important; }
         .border-theme { border-color: var(--border-color) !important; }
+
+        /* Correction mode sombre pour les badges */
+        [data-theme="dark"] .badge.bg-secondary {
+            background-color: #4a4a4a !important;
+            color: #f0f0f0 !important;
+        }
+
+        [data-theme="dark"] .text-muted {
+            color: #b0b0b0 !important;
+        }
+
+        [data-theme="dark"] .btn-outline-light {
+            color: #f8f9fa;
+            border-color: #f8f9fa;
+        }
+
+        [data-theme="dark"] .btn-outline-light:hover {
+            background-color: #f8f9fa;
+            color: #1a1a1a;
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -885,7 +917,15 @@
                         <a class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">Contact</a>
                     </li>
                     
-                    <!-- Petit bouton de thème juste à côté des onglets -->
+                    <li class="nav-item search-wrapper">
+                        <form class="search-form" action="{{ route('search') }}" method="GET">
+                            <input type="text" name="q" class="search-input" placeholder="Rechercher..." value="{{ request('q') }}">
+                            <button type="submit" class="search-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </li>
+                    
                     <li class="nav-item theme-toggle-wrapper">
                         <button class="theme-switch-btn" onclick="toggleTheme()" id="themeToggleBtn">
                             <i class="fas fa-sun" id="themeIcon"></i>
@@ -949,12 +989,56 @@
                         <li><i class="fas fa-envelope"></i> acontact@lacs1.mairie.tg</li>
                         <li><i class="fas fa-clock"></i> Lun-Vend, 7H00-17H30</li>
                     </ul>
+                    
+                    <div class="border-top border-success mt-3 mb-3" style="width: 40px; opacity: 0.5;"></div>
+                    
+                    <h6 class="mb-2" style="color: var(--primary-color); font-size: 0.9rem;">
+                        <i class="fas fa-code me-1"></i> Réalisation (Stage 2026)
+                    </h6>
+                    <ul class="footer-links" style="list-style: none; padding-left: 0;">
+                        <li class="mb-1">
+                            <i class="fas fa-user-check text-success me-2" style="width: 18px;"></i>
+                            <strong>Alassane SANT'ANNA</strong> 
+                            <span class="text-muted" style="font-size: 0.7rem;">| Chef projet</span>
+                        </li>
+                        <li class="mb-1">
+                            <i class="fas fa-paint-brush text-success me-2" style="width: 18px;"></i>
+                            <strong>Joel HOUNKPATI</strong> 
+                            <span class="text-muted" style="font-size: 0.7rem;">| Front-end</span>
+                        </li>
+                        <li class="mb-1">
+                            <i class="fas fa-map-marked-alt text-success me-2" style="width: 18px;"></i>
+                            <strong>Pauline AGBOKOU</strong> 
+                            <span class="text-muted" style="font-size: 0.7rem;">| Cartographie</span>
+                        </li>
+                        <li class="mb-1">
+                            <i class="fas fa-database text-success me-2" style="width: 18px;"></i>
+                            <strong>Koffi Justin KOUTOWOU</strong> 
+                            <span class="text-muted" style="font-size: 0.7rem;">| Back-end</span>
+                        </li>
+                    </ul>
+                    <small class="text-muted" style="font-size: 0.7rem;">
+                        <i class="fas fa-graduation-cap me-1"></i> Projet réalisé à la Mairie Lacs 1 (Aného)
+                    </small>
                 </div>
             </div>
             <hr>
+
+            <!-- LIGNE : DOCUMENTATION ET CRÉDITS 
+            <div class="row mt-4 mb-3">
+                <div class="col-md-12 text-center">
+                    <a href="{{ route('documentation') }}" class="btn btn-sm btn-outline-light me-3" style="border-radius: 30px;">
+                        <i class="fas fa-book me-1"></i> Documentation technique
+                    </a>
+                    <button type="button" class="btn btn-sm btn-outline-light" style="border-radius: 30px;" data-bs-toggle="modal" data-bs-target="#creditsModal">
+                        <i class="fas fa-users me-1"></i> Crédits
+                    </button>
+                </div>
+            </div>-->
+            
             <div class="row">
                 <div class="col-md-6">
-                    <p>&copy; 2026 Forêt Urbaine d'Aného. Tous droits réservés.</p>
+                    <p>&copy; 2026 Mairie Lacs 1. Tous droits réservés.</p>
                 </div>
                 <div class="col-md-6 text-end">
                     <a href="#" class="me-3">Mentions légales</a>
@@ -964,31 +1048,131 @@
         </div>
     </footer>
 
+    <!-- MODAL DES CRÉDITS -->
+    <div class="modal fade" id="creditsModal" tabindex="-1" aria-labelledby="creditsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: var(--primary-color); color: white;">
+                    <h5 class="modal-title" id="creditsModalLabel">
+                        <i class="fas fa-tree me-2"></i> Crédits du projet
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 class="mb-3" style="color: var(--primary-color);">
+                        <i class="fas fa-code me-2"></i> Équipe de développement
+                    </h6>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="rounded-circle bg-success bg-opacity-10 p-2 me-3">
+                                    <i class="fas fa-database text-success"></i>
+                                </div>
+                                <div>
+                                    <strong>Alassane SANT'ANNA</strong><br>
+                                    <small class="text-muted">Chef de projet & Back-end</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="rounded-circle bg-success bg-opacity-10 p-2 me-3">
+                                    <i class="fas fa-paint-brush text-success"></i>
+                                </div>
+                                <div>
+                                    <strong>Joel HOUNKPATI</strong><br>
+                                    <small class="text-muted">Front-end & Intégrateur</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="rounded-circle bg-success bg-opacity-10 p-2 me-3">
+                                    <i class="fas fa-map-marked-alt text-success"></i>
+                                </div>
+                                <div>
+                                    <strong>Pauline Amigan AGBOKOU</strong><br>
+                                    <small class="text-muted">Cartographie & API</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="rounded-circle bg-success bg-opacity-10 p-2 me-3">
+                                    <i class="fas fa-tachometer-alt text-success"></i>
+                                </div>
+                                <div>
+                                    <strong>Koffi Justin KOUTOWOU</strong><br>
+                                    <small class="text-muted">Administration & CRUD</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h6 class="mb-3" style="color: var(--primary-color);">
+                        <i class="fas fa-chalkboard-user me-2"></i> Encadrement
+                    </h6>
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="text-center p-2">
+                                <i class="fas fa-user-tie fa-2x mb-2" style="color: var(--primary-color);"></i>
+                                <p class="mb-0"><strong>Mme Priskila AGBOGBE</strong></p>
+                                <small class="text-muted">Service communication</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-2">
+                                <i class="fas fa-laptop-code fa-2x mb-2" style="color: var(--primary-color);"></i>
+                                <p class="mb-0"><strong>M. Marthey & M. Blaise</strong></p>
+                                <small class="text-muted">Responsables Informatique</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-2">
+                                <i class="fas fa-university fa-2x mb-2" style="color: var(--primary-color);"></i>
+                                <p class="mb-0"><strong>M. Alex WILSON</strong></p>
+                                <small class="text-muted">Tuteur pédagogique</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h6 class="mb-3" style="color: var(--primary-color);">
+                        <i class="fas fa-cogs me-2"></i> Technologies
+                    </h6>
+                    <div class="d-flex flex-wrap gap-2 justify-content-center">
+                        <span class="badge bg-secondary">Laravel 12</span>
+                        <span class="badge bg-secondary">PHP 8.2</span>
+                        <span class="badge bg-secondary">MySQL</span>
+                        <span class="badge bg-secondary">Bootstrap 5</span>
+                        <span class="badge bg-secondary">Leaflet.js</span>
+                        <span class="badge bg-secondary">Chart.js</span>
+                        <span class="badge bg-secondary">jQuery</span>
+                        <span class="badge bg-secondary">Google Maps API</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+                        <i class="fas fa-check me-2"></i>Fermer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // ========== SYSTÈME DE THÈME GLOBAL ==========
-        
-        // Fonction principale pour basculer le thème
         function toggleTheme() {
             const body = document.body;
             const currentTheme = body.getAttribute('data-theme') || 'light';
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             
-            // Appliquer le thème
             body.setAttribute('data-theme', newTheme);
-            
-            // Mettre à jour l'interface
             updateThemeUI(newTheme);
-            
-            // Sauvegarder la préférence
             localStorage.setItem('selectedTheme', newTheme);
-            
-            // Animation du bouton
             animateThemeButton();
         }
 
-        // Mise à jour de l'interface du bouton (simplifiée)
         function updateThemeUI(theme) {
             const icon = document.getElementById('themeIcon');
             const text = document.getElementById('themeText');
@@ -1005,44 +1189,45 @@
             }
         }
 
-        // Animation du bouton
         function animateThemeButton() {
             const btn = document.getElementById('themeToggleBtn');
             btn.classList.add('switching');
             setTimeout(() => btn.classList.remove('switching'), 300);
         }
 
-        // Chargement initial
         document.addEventListener('DOMContentLoaded', function() {
-            // Récupérer le thème sauvegardé
             const savedTheme = localStorage.getItem('selectedTheme') || 'light';
-            
-            // Appliquer le thème
             document.body.setAttribute('data-theme', savedTheme);
             updateThemeUI(savedTheme);
 
-            // Gestion des liens actifs
             const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
             const currentPath = window.location.pathname;
             
             navLinks.forEach(link => {
-                // Vérifier si le lien correspond à la route actuelle
+                if (link.closest('.search-wrapper') || link.closest('.theme-toggle-wrapper')) {
+                    return;
+                }
+                
                 if (link.getAttribute('href') === currentPath) {
                     link.classList.add('active');
                 }
                 
                 link.addEventListener('click', function() {
-                    navLinks.forEach(l => l.classList.remove('active'));
+                    navLinks.forEach(l => {
+                        if (!l.closest('.search-wrapper') && !l.closest('.theme-toggle-wrapper')) {
+                            l.classList.remove('active');
+                        }
+                    });
                     this.classList.add('active');
                 });
             });
 
-            // Fermeture du menu mobile
             const navbarToggler = document.querySelector('.navbar-toggler');
             const navbarCollapse = document.querySelector('.navbar-collapse');
             
             if (navbarToggler && navbarCollapse) {
-                navLinks.forEach(link => {
+                const allLinks = document.querySelectorAll('.navbar-nav a');
+                allLinks.forEach(link => {
                     link.addEventListener('click', () => {
                         if (window.innerWidth < 992 && navbarCollapse.classList.contains('show')) {
                             navbarToggler.click();
